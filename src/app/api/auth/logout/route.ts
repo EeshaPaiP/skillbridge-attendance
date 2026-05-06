@@ -1,10 +1,19 @@
 import { auth } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
-const jsonHeaders = { 'content-type': 'application/json' };
-const getAuthOrigin = (request: Request) => request.headers.get('origin') ?? 'http://localhost:3000';
+const getAuthOrigin = (request: Request) => {
+  const authBaseUrl = process.env.NEON_AUTH_BASE_URL || process.env.BETTER_AUTH_BASE_URL;
+
+  if (authBaseUrl) {
+    return new URL(authBaseUrl).origin;
+  }
+
+  return request.headers.get('origin') ?? 'http://localhost:3000';
+};
 
 export async function POST(request: Request) {
+  let signOutError: unknown = null;
+
   try {
     const result = await auth.signOut({
       fetchOptions: {
@@ -15,23 +24,22 @@ export async function POST(request: Request) {
     });
 
     if (result.error) {
-      return new Response(
-        JSON.stringify({ error: result.error.message || JSON.stringify(result.error) }),
-        {
-          status: 400,
-          headers: jsonHeaders,
-        },
-      );
+      signOutError = result.error;
     }
-
-    return NextResponse.redirect(new URL('/sign-in', request.url));
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      {
-        status: 500,
-        headers: jsonHeaders,
-      },
-    );
+    signOutError = error;
   }
+
+  if (signOutError) {
+    console.error('logout route signOut warning', {
+      error: signOutError instanceof Error ? signOutError.message : String(signOutError),
+    });
+  }
+
+  const response = NextResponse.redirect(new URL('/sign-in', request.url), { status: 303 });
+  response.cookies.delete('__Secure-neon-auth.session_token');
+  response.cookies.delete('__Secure-neon-auth.local.session_data');
+  response.cookies.delete('__Secure-neon-auth.session_challange');
+
+  return response;
 }

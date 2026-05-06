@@ -4,4 +4,7 @@ Phone: 7899229377
 GitHub Profile: https://github.com/EeshaPaiP
 
 Most Challenging Part: 
-The most challenging part was managing the synchronization between the Neon Auth provider and the PostgreSQL database, specifically handling connection timeouts and ensuring environment variables remained consistent across the server-side route handlers.
+The most challenging part was managing the synchronization between the Neon Auth 
+provider and the PostgreSQL database, specifically handling connection timeouts 
+and ensuring environment variables remained consistent across the server-side 
+route handlers to prevent unauthorized API access.

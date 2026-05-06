@@ -3,7 +3,7 @@
 SkillBridge is a role-based attendance management system built for a fictional state-level skilling programme. It features five distinct user workflows and a server-verified REST API.
 
 ## 🚀 Live URLs
-- Frontend & API Base: [INSERT YOUR VERCEL URL HERE]
+- Frontend & API Base: https://eesha-pai-p-qa6a.vercel.app/
 - Database: Neon PostgreSQL (Serverless)
 - Authentication: Neon Auth
 

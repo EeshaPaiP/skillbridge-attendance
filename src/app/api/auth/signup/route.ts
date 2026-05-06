@@ -3,7 +3,15 @@ import { sql } from '@/lib/db';
 
 const jsonHeaders = { 'content-type': 'application/json' };
 
-const getAuthOrigin = (request: Request) => request.headers.get('origin') ?? 'http://localhost:3000';
+const getAuthOrigin = (request: Request) => {
+  const authBaseUrl = process.env.NEON_AUTH_BASE_URL || process.env.BETTER_AUTH_BASE_URL;
+
+  if (authBaseUrl) {
+    return new URL(authBaseUrl).origin;
+  }
+
+  return request.headers.get('origin') ?? 'http://localhost:3000';
+};
 
 const createUsersTableIfNeeded = async () => {
   await sql`
